@@ -5371,6 +5371,13 @@
   dependencies:
     "bser" "2.1.1"
 
+"ffmpeg@^0.0.4":
+  "integrity" "sha1-HEYN+OfaUSf2LO70v6BsWciWMMs="
+  "resolved" "https://registry.npmjs.org/ffmpeg/-/ffmpeg-0.0.4.tgz"
+  "version" "0.0.4"
+  dependencies:
+    "when" ">= 0.0.1"
+
 "figgy-pudding@^3.5.1":
   "integrity" "sha512-0btnI/H8f2pavGMN8w40mlSKOfTK2SVJmBfBeVIj3kNw0swwgzyRq0d5TJVOwodFmtvpPeWPN/MCcfuWF0Ezbw=="
   "resolved" "https://registry.npmjs.org/figgy-pudding/-/figgy-pudding-3.5.2.tgz"
@@ -12534,6 +12541,11 @@
     "lodash.sortby" "^4.7.0"
     "tr46" "^2.0.2"
     "webidl-conversions" "^6.1.0"
+
+"when@>= 0.0.1":
+  "integrity" "sha1-xxMLan6gRpPoQs3J56Hyqjmjn4I="
+  "resolved" "https://registry.npmjs.org/when/-/when-3.7.8.tgz"
+  "version" "3.7.8"
 
 "which-boxed-primitive@^1.0.2":
   "integrity" "sha512-bwZdv0AKLpplFY2KZRX6TvyuN7ojjr7lwkg6ml0roIy9YeuSr7JS372qlNW18UQYzgYK9ziGcerWqZOmEn9VNg=="

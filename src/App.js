@@ -1,15 +1,17 @@
 import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
-import { Web3Storage, getFilesFromPath } from 'web3.storage/dist/bundle.esm.min.js';
+import { Web3Storage } from 'web3.storage/dist/bundle.esm.min.js';
 import { useState } from 'react';
-var Readable = require('stream').Readable
+import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from 'react-dom';
+var ffmpeg = require('ffmpeg');
 
 //model: https://github.com/livepeer/livepeer-jwplayer-demo/blob/main/pages/api/stream/index.ts
 
 function App() {
 
   const [videoURL, setVideoURL] = useState('');
+  const [cid, setCID] = useState('');
 
 
 
@@ -65,8 +67,9 @@ const FileSelection = () => {
     }
 
 
-    const Retreieve = () => {
+    const Retrieve = () => {
       var cid = "bafybeihc27llnpaoxqbk4m653wqtxcp5b63hxpxtkvtpusmn3iznyad7ii";
+      setCID(cid);
       async function retrieve() {
         const client = makeStorageClient()
         const res = await client.get(cid)
@@ -145,6 +148,32 @@ const FileSelection = () => {
     console.log(postedVid, "Posted Video")
     return postedVid;
   }
+  console.log(videoURL, "videoURL")
+  //ipfs sample url : https://ipfs.io/ipfs/bafybeiaq6uauj3cglqn6z2oty6jndtvbxgj4m6re56qbak6n6x2ydgmzce?filename=parscale%27d%202.mp4
+  //web3 url response: "https://api.web3.storage/car/bafybeihc27llnpaoxqbk4m653wqtxcp5b63hxpxtkvtpusmn3iznyad7ii"
+  const FfmpegTest = () => {
+    async function test() {
+  try {
+    var process = new ffmpeg("https://ipfs.io/ipfs/bafybeiaq6uauj3cglqn6z2oty6jndtvbxgj4m6re56qbak6n6x2ydgmzce?filename=parscale%27d%202.mp4");
+    process.then(function (video) {
+        // Video metadata
+        console.log(video.metadata, "video.metadata");
+        // FFmpeg configuration
+        console.log(video.info_configuration, "video.info_configuration");
+        video.setVideoFormat('rtmp')
+    }, function (err) {
+        console.log('Error: ' + err);
+    });
+} catch (e) {
+    console.log(e);
+    console.log(e.code);
+    console.log(e.msg);
+}
+    }
+ return (
+    <button onClick={test}> FFMPEG TEST</button>
+ )
+  }
 
 
 
@@ -153,8 +182,9 @@ const FileSelection = () => {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <FileSelection />
-        <Retreieve />
-        <button onClick={postStream}> POST STREAM (Creates New) </button>    
+        <Retrieve />  
+        <button onClick={postStream}> POST STREAM (Creates New) </button>   
+        <FfmpegTest /> 
       </header>
     </div>
   );
