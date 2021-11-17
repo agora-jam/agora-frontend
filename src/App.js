@@ -3,7 +3,6 @@ import './App.css';
 import axios from 'axios';
 import { Web3Storage } from 'web3.storage/dist/bundle.esm.min.js';
 import { useState } from 'react';
-import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from 'react-dom';
 var ffmpeg = require('ffmpeg');
 
 //model: https://github.com/livepeer/livepeer-jwplayer-demo/blob/main/pages/api/stream/index.ts
@@ -66,10 +65,10 @@ const FileSelection = () => {
       )
     }
 
-
+    //retrieve from web3.storage
     const Retrieve = () => {
       var cid = "bafybeihc27llnpaoxqbk4m653wqtxcp5b63hxpxtkvtpusmn3iznyad7ii";
-      setCID(cid);
+      
       async function retrieve() {
         const client = makeStorageClient()
         const res = await client.get(cid)
@@ -85,6 +84,7 @@ const FileSelection = () => {
         for (const file of files) {
           console.log(`${file.cid} -- ${file.path} -- ${file.size}`)
         }
+        setCID(cid);
         // request succeeded! do something with the response object here...
       }
         return (
@@ -100,7 +100,7 @@ const FileSelection = () => {
 
 
 
-  //create new LivePeer stream. need streamKey, playbackId in response. 
+  //create new LivePeer stream. need streamKey, playbackId in response to get stream for recorded plays.
 
   async function postStream() {
     const postedVid = await axios({
@@ -154,7 +154,8 @@ const FileSelection = () => {
   const FfmpegTest = () => {
     async function test() {
   try {
-    var process = new ffmpeg("https://ipfs.io/ipfs/bafybeiaq6uauj3cglqn6z2oty6jndtvbxgj4m6re56qbak6n6x2ydgmzce?filename=parscale%27d%202.mp4");
+    var process = new ffmpeg("/Users/peter/Desktop/Frankenstein.mp4");
+    console.log(process, "process")
     process.then(function (video) {
         // Video metadata
         console.log(video.metadata, "video.metadata");
@@ -175,6 +176,39 @@ const FileSelection = () => {
  )
   }
 
+  //download video from ipfs. might be better to construct an ipfs url with {cid} than use web3.storage api retrieve
+  const DownloadTest = () => {
+
+    function downloadImage() {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'https://ipfs.io/ipfs/bafybeiaq6uauj3cglqn6z2oty6jndtvbxgj4m6re56qbak6n6x2ydgmzce', true);
+      xhr.responseType = 'blob';
+      xhr.onload = function() {
+        var urlCreator = window.URL || window.webkitURL;
+        var src = urlCreator.createObjectURL(this.response);
+        var tag = document.createElement('a');
+        tag.href = src;
+        tag.target = '_blank';
+        tag.download = 'video/mp4';
+        document.body.appendChild(tag);
+        tag.click();
+        document.body.removeChild(tag);
+      };
+      xhr.onerror = err => {
+        alert('Failed to download picture');
+      };
+      xhr.send();
+      console.log(xhr,"xhr")
+    }
+    
+      return (
+        <button onClick={downloadImage}> Download Video</button>
+     )
+    }
+      
+  
+    
+  
 
 
   return (
@@ -185,6 +219,7 @@ const FileSelection = () => {
         <Retrieve />  
         <button onClick={postStream}> POST STREAM (Creates New) </button>   
         <FfmpegTest /> 
+        <DownloadTest />
       </header>
     </div>
   );
