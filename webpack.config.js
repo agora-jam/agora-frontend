@@ -19,11 +19,12 @@ module.exports = {
   mode: environment,
   devtool: 'inline-source-map',
   devServer: {
-    contentBase: FILES_DIRECTORY,
+    static: { directory: FILES_DIRECTORY },
+    port: 9000,
     historyApiFallback: true,
-    stats: {
-      colors: true,
-      errorDetails: true,
+    compress: true,
+    client: {
+      overlay: true,
     },
   },
   optimization: {
