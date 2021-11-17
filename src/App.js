@@ -37,19 +37,20 @@ function makeStorageClient() {
 const FileSelection = () => {
 
   const [files, setFiles] = useState('');
-    console.log(typeof(files), "files");
-    //***bug here with input --> Typeerror: e.stream is not a function
+    console.log(files, "files");
+    //***bug here with input --> TypeError: e.stream is not a function. i think this is a react issue. 
+    //https://www.npmjs.com/package/web3.storage
     async function storeFiles() {
       const client = makeStorageClient()
       const cid = await client.put(files)
+      .catch((error) => console.log(error))
       console.log('stored files with cid:', cid)
       return cid
-      //this cid are the IDs for the retrieval function down below
+      //this cid is needed for the ID for the retrieval function below
     }
     return (
-      <div>
+      <div>           
         <div>
-
           <input 
           type="file"
           accept="video/mp4" 
@@ -85,7 +86,7 @@ const FileSelection = () => {
           console.log(`${file.cid} -- ${file.path} -- ${file.size}`)
         }
         setCID(cid);
-        // request succeeded! do something with the response object here...
+ 
       }
         return (
           <div>
@@ -181,7 +182,7 @@ const FileSelection = () => {
 
     function downloadImage() {
       var xhr = new XMLHttpRequest();
-      xhr.open('GET', 'https://ipfs.io/ipfs/bafybeiaq6uauj3cglqn6z2oty6jndtvbxgj4m6re56qbak6n6x2ydgmzce', true);
+      xhr.open('GET', 'https://bafybeig3xsm64x3exx5tcikwzvnhhj426f6mmnshlnakeyum3yhu64jzzq.ipfs.dweb.link/046027488-charlie-chaplin-kid-auto-races.mp4', true);
       xhr.responseType = 'blob';
       xhr.onload = function() {
         var urlCreator = window.URL || window.webkitURL;
