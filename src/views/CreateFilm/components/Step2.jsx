@@ -42,7 +42,7 @@ const Step2 = ({ formData, currentStep, setCurrentStep, handleInputChange }) => 
         </div>
         <div className="flex flex-col">
           <label className="font-bold mb-2">{`How much do you want to raise?`}</label>
-          <div className="relative mb-6">
+          <div className="relative">
             <input
               type="text"
               name="fundraisingAmount"
@@ -54,6 +54,12 @@ const Step2 = ({ formData, currentStep, setCurrentStep, handleInputChange }) => 
               <span className="text-gray-500 text-sm">ETH</span>
             </div>
           </div>
+          <label className="label mb-6">
+            <div className="label-text-alt"></div>
+            <div className="label-text-alt">
+              Approximately ${Number(fundraisingAmount * 4000).toLocaleString()} USD
+            </div>
+          </label>
 
           <label className="font-bold">{`How many tokens do you want to create?`}</label>
           <label className="text-sm	text-gray-500 mb-2">
@@ -140,9 +146,6 @@ const Step2 = ({ formData, currentStep, setCurrentStep, handleInputChange }) => 
                       This is equal to {numberOfTokens * ((100 - percentageGiven) / 100)}{' '}
                       of the total tokens created.
                     </p>
-                    {/* <div className="justify-center card-actions">
-                      <button className="btn btn-link">More info</button>
-                    </div> */}
                   </div>
                 </div>
                 <div className="card text-center bg-primary text-white shadow-xl rounded-l-none">
@@ -176,9 +179,6 @@ const Step2 = ({ formData, currentStep, setCurrentStep, handleInputChange }) => 
                       This is equal to {numberOfTokens * (percentageGiven / 100)} of the
                       total tokens created.
                     </p>
-                    {/* <div className="justify-center card-actions">
-                      <button className="btn btn-ghost">More info</button>
-                    </div> */}
                   </div>
                 </div>
               </div>
@@ -186,14 +186,14 @@ const Step2 = ({ formData, currentStep, setCurrentStep, handleInputChange }) => 
           </div>
         </div>
         <div className="mt-12">
+          <button onClick={handleSubmit} className="mb-4 btn btn-primary btn-block">
+            Next
+          </button>
           <button
             onClick={() => setCurrentStep(currentStep - 1)}
-            className="btn btn-secondary btn-outline"
+            className="btn btn-secondary btn-outline btn-block"
           >
             Back
-          </button>
-          <button onClick={handleSubmit} className="ml-4 btn btn-primary">
-            Next
           </button>
         </div>
         {error && <div className="text-red-500 mt-4">{error}</div>}
