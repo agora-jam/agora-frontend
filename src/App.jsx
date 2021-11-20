@@ -1,21 +1,25 @@
 import React, { useEffect } from 'react';
-import { ethers } from 'ethers';
-
 import Router from './router';
-import useStore from './store';
+import useWallet from './hooks/useWallet';
 
 const App = () => {
-  const { setProvider, setSigner } = useStore((state) => state);
+  const { setWalletInfo, isWalletConnected, connectProvider } = useWallet();
 
-  useEffect(() => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
+  useEffect(async () => {
+    const isConnected = await isWalletConnected();
 
-    setProvider(provider);
-    setSigner(signer);
+    if (isConnected) {
+      setWalletInfo();
+    } else {
+      connectProvider();
+    }
   }, []);
 
-  return <Router />;
+  return (
+    <div className="h-screen w-screen flex flex-col">
+      <Router />
+    </div>
+  );
 };
 
 export default App;
