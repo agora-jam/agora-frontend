@@ -23,20 +23,16 @@ const Step2 = ({ formData, currentStep, setCurrentStep, handleInputChange }) => 
   };
 
   const getTokenPercentage = () => {
-    if (!percentageGiven || !numberOfTokens || !fundraisingAmount) return '';
+    if (!numberOfTokens || !fundraisingAmount) return '';
 
-    const tokenPrice = parseInt(fundraisingAmount) / parseInt(numberOfTokens);
+    const percentage = 100 / parseInt(numberOfTokens);
 
-    const percentage =
-      (parseInt(tokenPrice) / parseInt(fundraisingAmount)) *
-      (parseInt(percentageGiven) / 100);
-
-    return (percentage * 100).toFixed(2).toString() + '%';
+    return percentage.toFixed(4).toString() + '%';
   };
 
   return (
     <div className="w-11/12 max-w-lg mx-auto">
-      <div className="py-12">
+      <div className="my-8 p-12 card bg-base-200">
         <div className="mb-10">
           <h2 className="font-bold text-2xl mb-2">Step 2: Fractionalize your NFT</h2>
           <p className="text-gray-500">
@@ -46,18 +42,24 @@ const Step2 = ({ formData, currentStep, setCurrentStep, handleInputChange }) => 
         </div>
         <div className="flex flex-col">
           <label className="font-bold mb-2">{`How much do you want to raise?`}</label>
-          <div className="relative mb-6">
+          <div className="relative">
             <input
               type="text"
               name="fundraisingAmount"
               value={fundraisingAmount}
               onChange={handleInputChange}
-              className="border-solid border-gray-200	border px-4 py-2 w-full"
+              className="input w-full"
             />
             <div className="absolute top-0 right-5 h-full flex items-center">
               <span className="text-gray-500 text-sm">ETH</span>
             </div>
           </div>
+          <label className="label mb-6">
+            <div className="label-text-alt"></div>
+            <div className="label-text-alt">
+              Approximately ${Number(fundraisingAmount * 4000).toLocaleString()} USD
+            </div>
+          </label>
 
           <label className="font-bold">{`How many tokens do you want to create?`}</label>
           <label className="text-sm	text-gray-500 mb-2">
@@ -69,7 +71,7 @@ const Step2 = ({ formData, currentStep, setCurrentStep, handleInputChange }) => 
               name="numberOfTokens"
               value={numberOfTokens}
               onChange={handleInputChange}
-              className="border-solid border-gray-200	border px-4 py-2 w-full"
+              className="input w-full"
             />
             <div className="absolute top-0 right-5 h-full flex items-center">
               <span className="text-gray-500 text-sm">tokens</span>
@@ -86,7 +88,7 @@ const Step2 = ({ formData, currentStep, setCurrentStep, handleInputChange }) => 
               name="percentageGiven"
               value={percentageGiven}
               onChange={handleInputChange}
-              className="border-solid border-gray-200	border px-4 py-2 w-full"
+              className="input w-full"
             />
             <div className="absolute top-0 right-5 h-full flex items-center">
               <span className="text-gray-500 text-sm">%</span>
@@ -111,20 +113,87 @@ const Step2 = ({ formData, currentStep, setCurrentStep, handleInputChange }) => 
               <span className="flex-grow border-b border-dashed border-gray-200 mx-4"></span>
               <span>{getTokenPercentage()}</span>
             </div>
+            {percentageGiven && numberOfTokens && (
+              <div className="flex justify-between items-baseline my-4">
+                <div className="card text-center bg-white shadow-xl rounded-r-none">
+                  <div className="card-body">
+                    <i className="m-auto">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-12 w-12"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"
+                        />
+                      </svg>
+                    </i>
+                    <h2 className="card-title mt-4">
+                      You will own {100 - percentageGiven}% of tokens
+                    </h2>
+                    <p>
+                      This is equal to {numberOfTokens * ((100 - percentageGiven) / 100)}{' '}
+                      of the total tokens created.
+                    </p>
+                  </div>
+                </div>
+                <div className="card text-center bg-primary text-white shadow-xl rounded-l-none">
+                  <div className="card-body">
+                    <i className="m-auto">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-12 w-12"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"
+                        />
+                      </svg>
+                    </i>
+                    <h2 className="card-title mt-4">
+                      {percentageGiven}% available for fundraising
+                    </h2>
+                    <p>
+                      This is equal to {numberOfTokens * (percentageGiven / 100)} of the
+                      total tokens created.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <div className="mt-12">
-          <button
-            onClick={() => setCurrentStep(currentStep - 1)}
-            className="border border-solid border-gray-200 font-medium text-sm px-6 py-3 mr-2"
-          >
-            Back
+          <button onClick={handleSubmit} className="mb-4 btn btn-primary btn-block">
+            Next
           </button>
           <button
-            onClick={handleSubmit}
-            className="bg-indigo-600 font-medium text-white text-sm px-6 py-3"
+            onClick={() => setCurrentStep(currentStep - 1)}
+            className="btn btn-secondary btn-outline btn-block"
           >
-            Next
+            Back
           </button>
         </div>
         {error && <div className="text-red-500 mt-4">{error}</div>}

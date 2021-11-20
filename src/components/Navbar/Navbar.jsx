@@ -23,12 +23,12 @@ const Navbar = () => {
               Connect wallet
             </button>
           )}
-          <Link
+          {/* <Link
             to={routes.createFilm}
             className="bg-indigo-600 font-medium text-white text-sm px-4 py-3"
           >
             Upload film
-          </Link>
+          </Link> */}
         </div>
       </nav>
     </div>
