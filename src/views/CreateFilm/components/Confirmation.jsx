@@ -32,10 +32,7 @@ const Confirmation = ({ formData, tokenId }) => {
           <video src={videoUrl} className="mt-6" width="100%" controls />
 
           <div className="width-full flex justify-center align-center mt-10">
-            <Link
-              to={`/film/${tokenId}`}
-              className="btn btn-primary"
-            >
+            <Link to={`/film/${tokenId}`} className="btn btn-primary">
               View your film page
             </Link>
           </div>
