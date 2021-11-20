@@ -13,6 +13,7 @@ import Home from '../views/Home';
 
 // Non-Critical Components
 const FilmPage = lazy(() => import('../views/FilmPage'));
+const WatchFilm = lazy(() => import('../views/WatchFilm'));
 const CreateFilm = lazy(() => import('../views/CreateFilm'));
 
 const AppRouter = () => (
@@ -22,6 +23,7 @@ const AppRouter = () => (
       <Switch>
         <Route exact path={routes.home} component={Home} />
         <Route exact path={routes.filmPage} component={FilmPage} />
+        <Route exact path={routes.watchFilm} component={WatchFilm} />
         <Route exact path={routes.createFilm} component={CreateFilm} />
         <RedirectTo404 />
       </Switch>

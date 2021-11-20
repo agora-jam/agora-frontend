@@ -1,5 +1,6 @@
 export default {
   home: '/',
-  filmPage: '/film',
+  filmPage: '/film/:tokenId',
   createFilm: '/new',
+  watchFilm: '/watch/:tokenId',
 };
