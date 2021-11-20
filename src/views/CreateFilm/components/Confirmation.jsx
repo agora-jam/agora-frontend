@@ -7,7 +7,7 @@ const Confirmation = ({ formData, tokenId }) => {
 
   return (
     <div className="w-11/12 max-w-lg mx-auto">
-      <div className="py-12">
+      <div className="my-8 p-12 card bg-base-200">
         <div className="mb-10">
           <h2 className="font-bold text-2xl mb-2">
             Congratulations! Your film is an NFT! 🎉
@@ -34,9 +34,9 @@ const Confirmation = ({ formData, tokenId }) => {
           <div className="width-full flex justify-center align-center mt-10">
             <Link
               to={`/film/${tokenId}`}
-              className="bg-indigo-600 font-medium text-white text-sm px-6 py-3"
+              className="btn btn-primary"
             >
-              View film profile
+              View your film page
             </Link>
           </div>
         </div>
