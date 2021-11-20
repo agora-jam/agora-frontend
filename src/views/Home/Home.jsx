@@ -8,7 +8,7 @@ const Home = () => {
       className="hero min-h-screen bg-base-200"
       style={{
         // eslint-disable-next-line no-undef
-        backgroundImage: `url(${require('../../../assets/images/bg-home.jpeg')})`,
+        backgroundImage: `url(${require('../../../assets/images/bg-home-low.jpg')})`,
       }}
     >
       <div className="hero-overlay bg-opacity-80"></div>
