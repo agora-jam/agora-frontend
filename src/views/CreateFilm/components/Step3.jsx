@@ -59,32 +59,62 @@ const Step3 = ({ formData, setFormData, currentStep, setCurrentStep, setTokenId 
 
   return (
     <div className="w-11/12 max-w-lg mx-auto">
-      <div className="py-12">
-        <div className="mb-10">
+      <div className="my-8 p-12 card bg-base-200">
+        <div className="mb-5">
           <h2 className="font-bold text-2xl mb-2">
             Step 3: Upload your film to the blockchain
           </h2>
           <p className="text-gray-500">
             Move your creation to the most reliable decentralized storage
           </p>
+          <div className="powered-by flex mt-5 items-center text-gray-500">
+            <p>Powered by </p>
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/c/c2/IPFS_logo.png"
+              alt="IPFS logo"
+              width="75px"
+              height="auto"
+            />
+          </div>
         </div>
-        <div className="flex flex-col justify-center w-full	p-8 border border-dashed border-gray-200">
-          <p className="text-sm	font-medium text-gray-400">MP4, WEBM or OGG. Max 32 GB.</p>
-          <input type="file" name="video" onChange={onVideoChange} className="my-3" />
+        <div className="sm:border-t sm:border-gray-200">
+          <div className="mt-1 sm:mt-0 sm:col-span-2">
+            <div className="max-w-lg px-6 p-6 border-2 border-gray-300 border-dashed rounded-md">
+              <div className="flex items-center">
+                <label
+                  htmlFor="film-upload"
+                  className="btn-sm btn-accent btn btn-outline mr-2"
+                >
+                  Upload Video
+                  <input
+                    id="film-upload"
+                    type="file"
+                    name="video"
+                    onChange={onVideoChange}
+                    className="sr-only"
+                  />
+                </label>
+                <p className="text-sm	font-medium text-gray-400">
+                  MP4, WEBM or OGG. Max 32 GB.
+                </p>
+              </div>
+              {videoFile && <p className="mt-2">{videoFile.name}</p>}
+            </div>
+          </div>
         </div>
         <div className="mt-10">
           <button
-            onClick={() => setCurrentStep(currentStep - 1)}
-            className="border border-solid border-gray-200 font-medium text-sm px-6 py-3 mr-2"
-          >
-            Back
-          </button>
-          <button
             onClick={onSubmit}
-            className="bg-indigo-600 font-medium text-white text-sm px-6 py-3"
+            className={'btn btn-primary btn-block mb-4' + (isLoading ? ' loading' : '')}
             disabled={isLoading}
           >
-            {isLoading ? 'Creating NFT...' : 'Create NFT'}
+            {isLoading ? 'Creating Film NFT' : 'Upload and Create Film NFT'}
+          </button>
+          <button
+            onClick={() => setCurrentStep(currentStep - 1)}
+            className="btn btn-secondary btn-outline btn-block"
+          >
+            Back
           </button>
         </div>
         {error && <div className="text-red-500 mt-4">{error}</div>}
