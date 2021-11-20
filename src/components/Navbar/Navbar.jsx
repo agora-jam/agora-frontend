@@ -11,7 +11,7 @@ const Navbar = () => {
         </Link>
         <Link
           to={routes.createFilm}
-          className="bg-indigo-600 font-medium text-white text-sm px-4 py-3"
+          className="btn btn-primary"
         >
           Upload film
         </Link>
