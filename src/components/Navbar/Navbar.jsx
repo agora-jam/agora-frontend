@@ -9,10 +9,7 @@ const Navbar = () => {
         <Link to={routes.home} className="font-bold	text-lg">
           AGORA
         </Link>
-        <Link
-          to={routes.createFilm}
-          className="btn btn-primary"
-        >
+        <Link to={routes.createFilm} className="btn btn-primary">
           Upload film
         </Link>
       </nav>
