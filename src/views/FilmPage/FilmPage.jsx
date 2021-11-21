@@ -1,20 +1,22 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import Web3Modal from 'web3modal';
 import ethers from 'ethers';
-
-import { useEffect, useState } from 'react';
 import useStore from '../../store/index.js';
 import axios from 'axios';
 import Agora from '../../contracts/agora.json';
-import { agoraAddress } from '../../../config.js';
+import AgoraShare from '../../contracts.agoraShare.json';
+import { agoraAddress, agoraShareAddress } from '../../../config.js';
+import PropTypes from 'prop-types';
 
-const FilmPage = () => {
+const FilmPage = ({ location }) => {
   const { filmId } = useParams();
-  // const { genericProvider } = useStore((state) => state);
+  const { genericProvider } = useStore((state) => state);
   const [movie, setMovie] = useState(location.state);
   const [filmStatus, setFilmStatus] = useState('active');
+  const [transactions, setTransactions] = useState(null);
+
+  if (movie.fundraisingAmount === movie.amountRaised) setFilmStatus('closed');
 
   const nftBreakdown = [
     'Deleted scenes NFT',
@@ -24,15 +26,23 @@ const FilmPage = () => {
     'Revenue share',
   ];
 
-  const buyNft = async (nft) => {
+  const buyNft = async (nft, amount) => {
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
     const signer = provider.getSigner();
+    const agoraShareContract = new ethers.Contract(
+      agoraShareAddress,
+      AgoraShare.abi,
+      signer,
+    );
+    const price = await agoraShareContract.getToBuy(nft.id, amount);
+    await agoraShareContract.buyShareinFilm(nft.id, price);
   };
 
   useEffect(() => {
     getMovieDetails(filmId);
+    getTransactions(filmId);
   }, []);
 
   const getMovieDetails = async (id) => {
@@ -58,6 +68,16 @@ const FilmPage = () => {
     });
   };
 
+  const getTransactions = async (id) => {
+    const agoraShareContract = new ethers.Contract(
+      agoraShareAddress,
+      AgoraShare.abi,
+      genericProvider,
+    );
+    const investors = await agoraShareContract.getFilmInvestors(id);
+    setTransactions(investors);
+  };
+
   return (
     <div>
       <h1>{movie.name}</h1>
@@ -78,8 +98,22 @@ const FilmPage = () => {
           })}
         </div>
       )}
+      {transactions.map((item, i) => {
+        return <div key={i}>{item}</div>;
+      })}
+      <button
+        onClick={() => {
+          buyNft(movie);
+        }}
+      >
+        Invest
+      </button>
     </div>
   );
+};
+
+FilmPage.propTypes = {
+  location: PropTypes.object,
 };
 
 export default FilmPage;

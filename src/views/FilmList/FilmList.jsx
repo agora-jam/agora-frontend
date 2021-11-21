@@ -6,10 +6,7 @@ import axios from 'axios';
 import { ethers } from 'ethers';
 import Agora from '../../contracts/agora.json';
 import AgoraShare from '../../contracts.agoraShare.json';
-
 import { agoraAddress, agoraShareAddress } from '../../../config.js';
-
-import mockData from './mockData';
 
 const FilmList = () => {
   const { genericProvider } = useStore((state) => state);
@@ -32,9 +29,10 @@ const FilmList = () => {
 
     const items = await Promise.all(
       data.map(async (i) => {
-        const tokenUrl = await agoraContract.getOneMovie(i.tokenId);
+        const tokenId = i.tokenId.toNumber();
+        const tokenUrl = await agoraContract.getOneMovie(tokenId);
         const meta = await axios.get(tokenUrl);
-        const amountRaised = await agoraShareContract.getSharedDropStruct(i.tokenId);
+        const amountRaised = await agoraShareContract.getSharedDropStruct(tokenId);
         const item = {
           tokenId: i.tokenId.toNumber(),
           amountRaised,
