@@ -21,10 +21,12 @@ const WatchFilm = () => {
   const [error, setError] = useState(null);
 
   const { isWalletConnected } = useWallet();
-  const { signer } = useStore((state) => state);
+  const { provider, signer } = useStore((state) => state);
 
   const loadVideo = async () => {
     try {
+      if (!provider) return;
+
       // Determine if user is connected to MetaMask
       const isConnected = await isWalletConnected();
       if (!isConnected) {
@@ -40,15 +42,11 @@ const WatchFilm = () => {
         signer,
       );
 
-      const shareTransaction = await agoraShareContract.getAuthorizeViewing(
+      const isAuthorized = await agoraShareContract.getAuthorizeViewing(
         parseInt(tokenId),
       );
 
-      const tx = await shareTransaction.wait();
-      const event = tx.events[0];
-      const value = event.args[2]; // todo: how to get the response from the event? (boolean)
-
-      if (value === false) {
+      if (!isAuthorized) {
         setError({
           title: 'Unauthorized',
           message: 'You must purchase a film token to watch this content',
@@ -57,20 +55,16 @@ const WatchFilm = () => {
         return;
       }
 
-      // Get movie url
-      const agoraContract = new ethers.Contract(agoraAddress, Agora.abi, signer);
-      const agoraTransaction = await agoraContract.getOneMovie(parseInt(tokenId));
-      const tx2 = await agoraTransaction.wait();
-      const event2 = tx2.events[0];
-      const value2 = event2.args[2];
+      // Get metadata url
+      const agoraContract = new ethers.Contract(agoraAddress, Agora.abi, provider);
+      const metadataUrl = await agoraContract.getOneMovie(parseInt(tokenId));
 
       // Get movie metadata
-      const metadataUrl = value2;
       const metadata = await getMetadata(metadataUrl);
       setVideoUrl(metadata.videoUrl);
 
+      // End function
       setIsLoading(false);
-      return;
     } catch (error) {
       setError(error);
       setIsLoading(false);
@@ -79,7 +73,7 @@ const WatchFilm = () => {
 
   useEffect(() => {
     loadVideo();
-  }, []);
+  }, [provider]);
 
   if (isLoading) return <Loading />;
   if (error) return <ErrorPage error={error} />;

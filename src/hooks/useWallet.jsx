@@ -3,11 +3,11 @@ import { ethers } from 'ethers';
 import useStore from '../store';
 
 export default () => {
-  const { setSigner, setAccount, setGenericProvider } = useStore((state) => state);
+  const { setSigner, setAccount, setProvider } = useStore((state) => state);
 
   const connectProvider = async () => {
     const provider = new ethers.providers.JsonRpcProvider();
-    setGenericProvider(provider);
+    setProvider(provider);
   };
 
   const connectWallet = async () => {
@@ -19,6 +19,7 @@ export default () => {
 
     setAccount(accounts[0]);
     setSigner(signer);
+    setProvider(provider);
   };
 
   const setWalletInfo = async () => {
@@ -28,6 +29,7 @@ export default () => {
 
     setAccount(accounts[0]);
     setSigner(signer);
+    setProvider(provider);
   };
 
   const isWalletConnected = async () => {
