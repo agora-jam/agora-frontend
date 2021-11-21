@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Web3Modal from 'web3modal';
@@ -12,7 +13,8 @@ import { getMetadata } from '../../utils/storage';
 const FilmPage = ({ location }) => {
   const { tokenId } = useParams();
   const { provider } = useStore((state) => state);
-  const [movie, setMovie] = useState(location.state);
+  const [movie, setMovie] = useState(location.state); // todo: uncomment
+
   const [filmStatus, setFilmStatus] = useState('active');
   const [transactions, setTransactions] = useState([]);
 
@@ -24,7 +26,7 @@ const FilmPage = ({ location }) => {
     'Revenue share',
   ];
 
-  const buyNft = async (nft, amount) => {
+  const buyNft = async (amount) => {
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
@@ -34,8 +36,8 @@ const FilmPage = ({ location }) => {
       AgoraShare.abi,
       signer,
     );
-    const price = await agoraShareContract.getToBuy(nft.id, amount);
-    await agoraShareContract.buyShareinFilm(nft.id, price);
+    const price = await agoraShareContract.getToBuy(parseInt(tokenId), amount);
+    await agoraShareContract.buyShareinFilm(parseInt(tokenId), price);
   };
 
   useEffect(() => {
@@ -85,35 +87,39 @@ const FilmPage = ({ location }) => {
   if (!movie) return null;
 
   return (
-    <div>
-      <h1>{movie.name}</h1>
-      <Link to={`/watch/${movie.tokenId}`}>
-        <button
-          className="btn btn-primary btn-active rounded-none	"
-          role="button"
-          aria-pressed="true"
-        >
-          Watch
-        </button>
-      </Link>
-      {filmStatus === 'active' && (
-        <div>
-          <h3>Token holder access</h3>
-          {nftBreakdown.map((item, i) => {
-            return <div key={i}>{item}</div>;
-          })}
+    <div className="w-11/12 mx-auto flex py-10">
+      <main className="w-4/6">
+        <div className="flex">
+          <div className="w-1/3">
+            <img src={movie.imageUrl} />
+          </div>
+          <div className="ml-9 flex-grow">
+            <h1 className="font-bold text-3xl">{movie.name}</h1>
+            <div className="text-sm	text-gray-500 mt-1 mb-5">{`${movie.genre} · ${movie.duration}m · ${movie.language} · ${movie.country}`}</div>
+            <div className="flex w-full items-center">
+              <Link to={`/watch/${movie.tokenId}`} className="btn btn-primary">
+                Watch
+              </Link>
+              <button className="btn btn-secondary ml-2" onClick={() => buyNft(1)}>
+                Invest
+              </button>
+              <div className="ml-2">100 token holders</div>
+            </div>
+          </div>
         </div>
-      )}
-      {transactions.map((item, i) => {
-        return <div key={i}>{item}</div>;
-      })}
-      <button
-        onClick={() => {
-          buyNft(movie);
-        }}
-      >
-        Invest
-      </button>
+        <div className="mt-10">{movie.description}</div>
+      </main>
+      <aside className="w-2/6">
+        <div>
+          <h4 className="font-bold text-lg mb-2">Token holder access</h4>
+          <ul>
+            {nftBreakdown.map((item, i) => (
+              <li key={i}>{item}</li>
+            ))}
+          </ul>
+        </div>
+        <div></div>
+      </aside>
     </div>
   );
 };

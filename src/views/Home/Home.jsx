@@ -16,7 +16,7 @@ const Home = () => {
         <div className="max-w-md">
           <h1 className="mb-2 text-6xl font-bold">AGORA</h1>
           <p className="mb-5 text-2xl">The first decentralized film festival.</p>
-          <Link className="btn btn-primary mb-4 " to={routes.createFilm}>
+          <Link className="btn btn-primary mb-4" to={routes.createFilm}>
             Create My NFT Film Submission
           </Link>
           <Link className="btn btn-accent" to={routes.filmList}>
