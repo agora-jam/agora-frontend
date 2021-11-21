@@ -52,6 +52,7 @@ const FilmList = () => {
   // };
 
   // if (loadingState === 'not-loaded') return <div>Loading...</div>;
+
   return (
     <div>
       {mockData.map((item, i) => {

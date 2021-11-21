@@ -1,6 +1,8 @@
 import React from 'react';
 // import { useParams } from 'react-router-dom';
 // import { Link } from 'react-router-dom';
+// import Web3Modal from 'web3modal';
+// import ethers from 'ethers';
 
 // import { useEffect, useState } from 'react';
 // import useStore from '../../store/index.js';
@@ -11,7 +13,7 @@ import React from 'react';
 
 const FilmPage = () => {
   // const { filmId } = useParams();
-  // const { genericProvider } = useStore((state) => state);
+  // // const { genericProvider } = useStore((state) => state);
   // const [movie, setMovie] = useState(location.state);
   // const [filmStatus, setFilmStatus] = useState('active');
 
@@ -22,6 +24,13 @@ const FilmPage = () => {
   //   'Buyout payback',
   //   'Revenue share',
   // ];
+
+  // const buyNft = async (nft) => {
+  //   const web3Modal = new Web3Modal();
+  //   const connection = await web3Modal.connect();
+  //   const provider = new ethers.providers.Web3Provider(connection);
+  //   const signer = provider.getSigner();
+  // };
 
   // useEffect(() => {
   //   getMovieDetails(filmId);
@@ -61,7 +70,6 @@ const FilmPage = () => {
         >
           Watch
         </button>
-        <p>{movie.description}</p>
       </Link>
       {filmStatus === 'active' && (
         <div>
