@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import Web3Modal from 'web3modal';
 import { ethers } from 'ethers';
 import { uploadMediaFile, saveMetadata } from '../../../utils/storage';
+
+import { agoraAddress, agoraShareAddress } from '../../../../config';
+import useStore from '../../../store';
+
+import Agora from '../../../contracts/agora.json';
+import AgoraShare from '../../../contracts/agoraShare.json';
 
 const Step3 = ({ formData, setFormData, currentStep, setCurrentStep, setTokenId }) => {
   const [videoFile, setVideoFile] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { signer, account } = useStore((state) => state);
 
   const onVideoChange = async (e) => {
     setVideoFile(e.target.files[0]);
@@ -17,11 +24,7 @@ const Step3 = ({ formData, setFormData, currentStep, setCurrentStep, setTokenId 
     // Validate Form
     if (!videoFile) return setError('Please select a video file');
 
-    // Get Signer
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.providers.Web3Provider(connection);
-    const signer = provider.getSigner(); // eslint-disable-line no-unused-vars
+    if (!account) return setError('Please connect your wallet');
 
     setIsLoading(true);
 
@@ -38,16 +41,42 @@ const Step3 = ({ formData, setFormData, currentStep, setCurrentStep, setTokenId 
       setFormData(finalFormData);
 
       // Save metadata
-      const tokenUri = await saveMetadata(finalFormData); // eslint-disable-line no-unused-vars
+      const metadataUrl = await saveMetadata(finalFormData);
 
-      // Create token // todo
-      // const agoraContract = new Contract();
-      // const transaction = await agoraContract.createToken(tokenUri);
-      // const tx = await transaction.wait();
-      // const event = tx.events[0];
-      // const value = event.args[2];
-      // const tokenId = value.toNumber();
-      setTokenId('abc-123-test'); // todo: use real token id
+      // Call contract to create movie NFT
+      const agoraContract = new ethers.Contract(agoraAddress, Agora.abi, signer);
+      const transaction = await agoraContract.create(metadataUrl);
+      const tx = await transaction.wait();
+
+      // Get movie nft token id
+      const event = tx.events[0];
+      const value = event.args[2];
+      const tokenId = value.toNumber();
+
+      setTokenId(tokenId);
+
+      // --- Share Tokens ---
+
+      // Format input data
+      const fundraisingAmount = ethers.utils.parseEther(formData.fundraisingAmount);
+      const numberOfTokens = parseInt(formData.numberOfTokens);
+      const percentageGiven = parseInt(formData.percentageGiven); // needs to be an integer
+
+      // Call contract to create share token
+      const agoraShareContract = new ethers.Contract(
+        agoraShareAddress,
+        AgoraShare.abi,
+        signer,
+      );
+
+      const shareTransaction = await agoraShareContract.shareAgoraNft(
+        tokenId,
+        numberOfTokens,
+        percentageGiven,
+        fundraisingAmount,
+      );
+
+      await shareTransaction.wait();
 
       setIsLoading(false);
       setCurrentStep(currentStep + 1);
