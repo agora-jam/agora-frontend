@@ -29,7 +29,6 @@
     "daisyui": "1.16.2",
     "ethers": "^5.5.1",
     "express": "^4.17.1",
-    "html-react-parser": "^1.2.8",
     "ipfs-http-client": "^54.0.0",
     "morgan": "^1.10.0",
     "prop-types": "^15.7.2",

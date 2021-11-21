@@ -31,7 +31,7 @@ const Confirmation = ({ formData, tokenId }) => {
           </div>
           <video src={videoUrl} className="mt-6" width="100%" controls />
 
-          <div className="width-full flex justify-center align-center mt-10">
+          <div className="width-full flex justify-center items-center mt-10">
             <Link to={`/film/${tokenId}`} className="btn btn-primary">
               View your film page
             </Link>
@@ -44,7 +44,7 @@ const Confirmation = ({ formData, tokenId }) => {
 
 Confirmation.propTypes = {
   formData: PropTypes.object.isRequired,
-  tokenId: PropTypes.string.isRequired,
+  tokenId: PropTypes.number.isRequired,
 };
 
 export default Confirmation;

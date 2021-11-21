@@ -23,15 +23,15 @@ const Step2 = ({ formData, currentStep, setCurrentStep, handleInputChange }) => 
   };
 
   const getTokenPercentage = () => {
-    if (!numberOfTokens || !fundraisingAmount) return '';
+    if (!numberOfTokens || !fundraisingAmount || !percentageGiven) return '';
 
     const percentage = 100 / parseInt(numberOfTokens);
 
-    return percentage.toFixed(4).toString() + '%';
+    return percentage.toFixed(2).toString() + '%';
   };
 
   return (
-    <div className="w-11/12 max-w-lg mx-auto">
+    <div className="w-11/12 max-w-xl mx-auto">
       <div className="my-8 p-12 card bg-base-200">
         <div className="mb-10">
           <h2 className="font-bold text-2xl mb-2">Step 2: Fractionalize your NFT</h2>
