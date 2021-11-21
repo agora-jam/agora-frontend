@@ -14,7 +14,7 @@ export default () => {
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
-    const signer = provider.getSigner(); // eslint-disable-line no-unused-vars
+    const signer = provider.getSigner();
     const accounts = await provider.listAccounts();
 
     setAccount(accounts[0]);
@@ -24,7 +24,7 @@ export default () => {
 
   const setWalletInfo = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner(); // eslint-disable-line no-unused-vars
+    const signer = provider.getSigner();
     const accounts = await provider.listAccounts();
 
     setAccount(accounts[0]);
