@@ -19,7 +19,7 @@ const Home = () => {
           <Link className="btn btn-primary mb-4 " to={routes.createFilm}>
             Create My NFT Film Submission
           </Link>
-          <Link className="btn btn-accent" to={routes.createFilm}>
+          <Link className="btn btn-accent" to={routes.filmList}>
             View Films Submissions
           </Link>
         </div>
