@@ -2,11 +2,11 @@ import create from 'zustand';
 
 const useStore = create((set) => ({
   signer: null,
-  provider: null,
-  publicProvider: null,
+  genericProvider: null,
+  account: null,
+  setAccount: (account) => set({ account }),
   setSigner: (signer) => set(() => ({ signer })),
-  setProvider: (provider) => set(() => ({ provider })),
-  setPublicProvider: (publicProvider) => set(() => ({ publicProvider })),
+  setGenericProvider: (provider) => set(() => ({ provider })),
 }));
 
 export default useStore;

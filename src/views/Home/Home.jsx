@@ -4,6 +4,8 @@ import React from 'react';
 // import Agora from '../../contracts/agora.json';
 // import NFT from '../../contracts/nft.json';
 // import { nftFilmAddress, agoraAddress } from '../../../config.js';
+import { Link } from 'react-router-dom';
+import routes from '../../router/routeList';
 
 const Home = () => {
   // const { provider } = useStore((state) => state);
@@ -39,16 +41,26 @@ const Home = () => {
   // };
 
   return (
-    <div>
-      {/* {items.map((item, i) => {
-        return (
-          <div key={i}>
-            <span>{item.name}</span>
-            <span>{item.description}</span>
-          </div>
-        );
-      })} */}
-      Home
+    <div
+      className="hero min-h-screen bg-base-200"
+      style={{
+        // eslint-disable-next-line no-undef
+        backgroundImage: `url(${require('../../../assets/images/bg-home-low.jpg')})`,
+      }}
+    >
+      <div className="hero-overlay bg-opacity-80"></div>
+      <div className="text-center hero-content text-neutral-content">
+        <div className="max-w-md">
+          <h1 className="mb-2 text-6xl font-bold">AGORA</h1>
+          <p className="mb-5 text-2xl">The first decentralized film festival.</p>
+          <Link className="btn btn-primary mb-4 " to={routes.createFilm}>
+            Create My NFT Film Submission
+          </Link>
+          <Link className="btn btn-accent" to={routes.createFilm}>
+            View Films Submissions
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };
