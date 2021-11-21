@@ -1,67 +1,92 @@
-import React from 'react';
-// import { useParams } from 'react-router-dom';
-// import { Link } from 'react-router-dom';
-// import Web3Modal from 'web3modal';
-// import ethers from 'ethers';
+import React, { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import Web3Modal from 'web3modal';
+import { ethers } from 'ethers';
+import useStore from '../../store/index.js';
+import Agora from '../../contracts/agora.json';
+import AgoraShare from '../../contracts/agoraShare.json';
+import { agoraAddress, agoraShareAddress } from '../../../config.js';
+import PropTypes from 'prop-types';
+import { getMetadata } from '../../utils/storage';
 
-// import { useEffect, useState } from 'react';
-// import useStore from '../../store/index.js';
-// import axios from 'axios';
-// import { ethers } from 'ethers';
-// import Agora from '../../contracts/agora.json';
-// import { agoraAddress } from '../../../config.js';
+const FilmPage = ({ location }) => {
+  const { tokenId } = useParams();
+  const { provider } = useStore((state) => state);
+  const [movie, setMovie] = useState(location.state);
+  const [filmStatus, setFilmStatus] = useState('active');
+  const [transactions, setTransactions] = useState([]);
 
-const FilmPage = () => {
-  // const { filmId } = useParams();
-  // // const { genericProvider } = useStore((state) => state);
-  // const [movie, setMovie] = useState(location.state);
-  // const [filmStatus, setFilmStatus] = useState('active');
+  const nftBreakdown = [
+    'Deleted scenes NFT',
+    'Script NFT',
+    'Name on Credits',
+    'Buyout payback',
+    'Revenue share',
+  ];
 
-  // const nftBreakdown = [
-  //   'Deleted scenes NFT',
-  //   'Script NFT',
-  //   'Name on Credits',
-  //   'Buyout payback',
-  //   'Revenue share',
-  // ];
+  const buyNft = async (nft, amount) => {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    const agoraShareContract = new ethers.Contract(
+      agoraShareAddress,
+      AgoraShare.abi,
+      signer,
+    );
+    const price = await agoraShareContract.getToBuy(nft.id, amount);
+    await agoraShareContract.buyShareinFilm(nft.id, price);
+  };
 
-  // const buyNft = async (nft) => {
-  //   const web3Modal = new Web3Modal();
-  //   const connection = await web3Modal.connect();
-  //   const provider = new ethers.providers.Web3Provider(connection);
-  //   const signer = provider.getSigner();
-  // };
+  useEffect(() => {
+    getMovieDetails(tokenId);
+    getTransactions(tokenId);
+  }, [provider]);
 
-  // useEffect(() => {
-  //   getMovieDetails(filmId);
-  // }, []);
+  const getMovieDetails = async () => {
+    if (!provider) return;
 
-  // const getMovieDetails = async (id) => {
-  //   const agoraContract = new ethers.Contract(agoraAddress, Agora.abi, genericProvider);
+    const agoraContract = new ethers.Contract(agoraAddress, Agora.abi, provider);
+    const agoraShareContract = new ethers.Contract(
+      agoraShareAddress,
+      AgoraShare.abi,
+      provider,
+    );
 
-  //   const tokenUrl = await agoraContract.getOneMovie(id);
-  //   const meta = await axios.get(tokenUrl);
-  //   setMovie({
-  //     tokenId: id.toNumber(),
-  //     video: meta.data.video,
-  //     image: meta.data.image,
-  //     name: meta.data.name,
-  //     description: meta.data.description,
-  //     genre: meta.data.genre,
-  //     language: meta.data.language,
-  //     country: meta.data.country,
-  //     duration: meta.data.duration,
-  //     imageUrl: meta.data.imageUrl,
-  //     videoUrl: meta.data.videoUrl,
-  //     fundraisingAmount: meta.data.fundraisingAmount,
-  //     numberOfTokens: meta.data.numberOfTokens,
-  //     percentageGiven: meta.data.percentageGiven,
-  //   });
-  // };
+    const metadataUrl = await agoraContract.getOneMovie(parseInt(tokenId));
+    const metadata = await getMetadata(metadataUrl);
+
+    const structure = await agoraShareContract.getSharedDropStruct(parseInt(tokenId)); // todo
+
+    const sharesSold = structure[4].toNumber();
+    const sharePrice = structure[6].toNumber();
+    const amountRaised = sharesSold * sharePrice;
+
+    const movie = { tokenId: parseInt(tokenId), amountRaised, ...metadata };
+    setMovie(movie);
+
+    if (movie.fundraisingAmount === parseInt(movie.amountRaised)) setFilmStatus('closed');
+  };
+
+  const getTransactions = async (id) => {
+    const x = true;
+    if (x) return; // todo: remove
+    if (!provider) return;
+
+    const agoraShareContract = new ethers.Contract(
+      agoraShareAddress,
+      AgoraShare.abi,
+      provider,
+    );
+    const investors = await agoraShareContract.getFilmInvestors(parseInt(id));
+    setTransactions(investors);
+  };
+
+  if (!movie) return null;
 
   return (
     <div>
-      {/* <h1>{movie.name}</h1>
+      <h1>{movie.name}</h1>
       <Link to={`/watch/${movie.tokenId}`}>
         <button
           className="btn btn-primary btn-active rounded-none	"
@@ -78,9 +103,23 @@ const FilmPage = () => {
             return <div key={i}>{item}</div>;
           })}
         </div>
-      )} */}
+      )}
+      {transactions.map((item, i) => {
+        return <div key={i}>{item}</div>;
+      })}
+      <button
+        onClick={() => {
+          buyNft(movie);
+        }}
+      >
+        Invest
+      </button>
     </div>
   );
+};
+
+FilmPage.propTypes = {
+  location: PropTypes.object,
 };
 
 export default FilmPage;

@@ -1,58 +1,62 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { ethers } from 'ethers';
+import { useEffect, useState } from 'react';
+import useStore from '../../store/index.js';
+import Agora from '../../contracts/agora.json';
+import AgoraShare from '../../contracts/agoraShare.json';
+import { agoraAddress, agoraShareAddress } from '../../../config.js';
 import Film from '../../components/Film';
-// import { useEffect, useState } from 'react';
-// import useStore from '../../store/index.js';
-// import axios from 'axios';
-// import { ethers } from 'ethers';
-// import Agora from '../../contracts/agora.json';
-// import { agoraAddress } from '../../../config.js';
-
-import mockData from './mockData';
+import { getMetadata } from '../../utils/storage';
 
 const FilmList = () => {
-  // const { genericProvider } = useStore((state) => state);
-  // const [nfts, setNfts] = useState([]);
-  // const [loadingState, setLoadingState] = useState('not-loaded');
+  const { provider } = useStore((state) => state);
+  const [nfts, setNfts] = useState([]);
+  const [loadingState, setLoadingState] = useState('not-loaded');
 
-  // useEffect(() => {
-  //   loadNFTs();
-  // }, []);
+  useEffect(() => {
+    loadNFTs();
+  }, [provider]);
 
-  // const loadNFTs = async () => {
-  //   const agoraContract = new ethers.Contract(agoraAddress, Agora.abi, genericProvider);
+  const loadNFTs = async () => {
+    if (!provider) return;
 
-  //   const data = await agoraContract.getAllMovies();
+    const agoraContract = new ethers.Contract(agoraAddress, Agora.abi, provider);
+    const agoraShareContract = new ethers.Contract(
+      agoraShareAddress,
+      AgoraShare.abi,
+      provider,
+    );
 
-  //   const items = await Promise.all(
-  //     data.map(async (i) => {
-  //       const tokenUrl = await agoraContract.getOneMovie(i.tokenId);
-  //       const meta = await axios.get(tokenUrl);
-  //       const item = {
-  //         tokenId: i.tokenId.toNumber(),
-  //         video: meta.data.video,
-  //         image: meta.data.image,
-  //         name: meta.data.name,
-  //         description: meta.data.description,
-  //         genre: meta.data.genre,
-  //         language: meta.data.language,
-  //         country: meta.data.country,
-  //         duration: meta.data.duration,
-  //         imageUrl: meta.data.imageUrl,
-  //         videoUrl: meta.data.videoUrl,
-  //         fundraisingAmount: meta.data.fundraisingAmount,
-  //         numberOfTokens: meta.data.numberOfTokens,
-  //         percentageGiven: meta.data.percentageGiven,
-  //       };
-  //       return item;
-  //     }),
-  //   );
+    const data = await agoraContract.getAllMovies();
 
-  //   setNfts(items);
-  //   setLoadingState('loaded');
-  // };
+    const items = await Promise.all(
+      data.map(async (ele) => {
+        const [id, url] = ele;
 
-  // if (loadingState === 'not-loaded') return <div>Loading...</div>;
+        const tokenId = id.toNumber();
+        try {
+          const metadata = await getMetadata(url);
+
+          const structure = await agoraShareContract.getSharedDropStruct(tokenId); // todo
+          const sharesSold = structure[4].toNumber();
+          const sharePrice = structure[6].toNumber();
+          const amountRaised = sharesSold * sharePrice;
+
+          const movie = { tokenId, amountRaised, ...metadata };
+          return movie;
+        } catch (error) {
+          console.error(error); // eslint-disable-line
+          return {};
+        }
+      }),
+    );
+
+    setNfts(items);
+    setLoadingState('loaded');
+  };
+
+  if (loadingState === 'not-loaded') return <div>Loading...</div>;
 
   return (
     <div>
@@ -62,7 +66,7 @@ const FilmList = () => {
             New film submissions
           </h2>
           <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-            {mockData.map((item, i) => {
+            {nfts.map((item, i) => {
               return (
                 <div key={i} className="m-4">
                   <Link to={{ pathname: `film/${item.tokenId}`, state: item }}>
