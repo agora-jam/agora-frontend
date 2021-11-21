@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import useStore from '../../store/index.js';
-import axios from 'axios';
-import { ethers } from 'ethers';
 import Agora from '../../contracts/agora.json';
 import AgoraShare from '../../contracts/agoraShare.json';
 import { agoraAddress, agoraShareAddress } from '../../../config.js';
 import Film from '../../components/Film';
+import { getMetadata } from '../../utils/storage';
 
 const FilmList = () => {
   const { provider } = useStore((state) => state);
@@ -31,29 +31,24 @@ const FilmList = () => {
     const data = await agoraContract.getAllMovies();
 
     const items = await Promise.all(
-      data.map(async (i) => {
-        const tokenId = i.tokenId.toNumber();
-        const tokenUrl = await agoraContract.getOneMovie(tokenId);
-        const meta = await axios.get(tokenUrl);
-        const amountRaised = await agoraShareContract.getSharedDropStruct(tokenId);
-        const item = {
-          tokenId: i.tokenId.toNumber(),
-          amountRaised,
-          video: meta.data.video,
-          image: meta.data.image,
-          name: meta.data.name,
-          description: meta.data.description,
-          genre: meta.data.genre,
-          language: meta.data.language,
-          country: meta.data.country,
-          duration: meta.data.duration,
-          imageUrl: meta.data.imageUrl,
-          videoUrl: meta.data.videoUrl,
-          fundraisingAmount: meta.data.fundraisingAmount,
-          numberOfTokens: meta.data.numberOfTokens,
-          percentageGiven: meta.data.percentageGiven,
-        };
-        return item;
+      data.map(async (ele) => {
+        const [id, url] = ele;
+
+        const tokenId = id.toNumber();
+        try {
+          const metadata = await getMetadata(url);
+
+          const structure = await agoraShareContract.getSharedDropStruct(tokenId); // todo
+          const sharesSold = structure[4].toNumber();
+          const sharePrice = structure[6].toNumber();
+          const amountRaised = sharesSold * sharePrice;
+
+          const movie = { tokenId, amountRaised, ...metadata };
+          return movie;
+        } catch (error) {
+          console.error(error); // eslint-disable-line
+          return {};
+        }
       }),
     );
 

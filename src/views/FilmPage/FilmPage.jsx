@@ -3,20 +3,18 @@ import { useParams, Link } from 'react-router-dom';
 import Web3Modal from 'web3modal';
 import { ethers } from 'ethers';
 import useStore from '../../store/index.js';
-import axios from 'axios';
 import Agora from '../../contracts/agora.json';
 import AgoraShare from '../../contracts/agoraShare.json';
 import { agoraAddress, agoraShareAddress } from '../../../config.js';
 import PropTypes from 'prop-types';
+import { getMetadata } from '../../utils/storage';
 
 const FilmPage = ({ location }) => {
-  const { filmId } = useParams();
+  const { tokenId } = useParams();
   const { provider } = useStore((state) => state);
   const [movie, setMovie] = useState(location.state);
   const [filmStatus, setFilmStatus] = useState('active');
-  const [transactions, setTransactions] = useState(null);
-
-  if (movie.fundraisingAmount === movie.amountRaised) setFilmStatus('closed');
+  const [transactions, setTransactions] = useState([]);
 
   const nftBreakdown = [
     'Deleted scenes NFT',
@@ -41,42 +39,50 @@ const FilmPage = ({ location }) => {
   };
 
   useEffect(() => {
-    getMovieDetails(filmId);
-    getTransactions(filmId);
-  }, []);
+    getMovieDetails(tokenId);
+    getTransactions(tokenId);
+  }, [provider]);
 
-  const getMovieDetails = async (id) => {
+  const getMovieDetails = async () => {
+    if (!provider) return;
+
     const agoraContract = new ethers.Contract(agoraAddress, Agora.abi, provider);
-
-    const tokenUrl = await agoraContract.getOneMovie(id);
-    const meta = await axios.get(tokenUrl);
-    setMovie({
-      tokenId: id.toNumber(),
-      video: meta.data.video,
-      image: meta.data.image,
-      name: meta.data.name,
-      description: meta.data.description,
-      genre: meta.data.genre,
-      language: meta.data.language,
-      country: meta.data.country,
-      duration: meta.data.duration,
-      imageUrl: meta.data.imageUrl,
-      videoUrl: meta.data.videoUrl,
-      fundraisingAmount: meta.data.fundraisingAmount,
-      numberOfTokens: meta.data.numberOfTokens,
-      percentageGiven: meta.data.percentageGiven,
-    });
-  };
-
-  const getTransactions = async (id) => {
     const agoraShareContract = new ethers.Contract(
       agoraShareAddress,
       AgoraShare.abi,
       provider,
     );
-    const investors = await agoraShareContract.getFilmInvestors(id);
+
+    const metadataUrl = await agoraContract.getOneMovie(parseInt(tokenId));
+    const metadata = await getMetadata(metadataUrl);
+
+    const structure = await agoraShareContract.getSharedDropStruct(parseInt(tokenId)); // todo
+
+    const sharesSold = structure[4].toNumber();
+    const sharePrice = structure[6].toNumber();
+    const amountRaised = sharesSold * sharePrice;
+
+    const movie = { tokenId: parseInt(tokenId), amountRaised, ...metadata };
+    setMovie(movie);
+
+    if (movie.fundraisingAmount === parseInt(movie.amountRaised)) setFilmStatus('closed');
+  };
+
+  const getTransactions = async (id) => {
+    const x = true;
+    if (x) return; // todo: remove
+    if (!provider) return;
+
+    const agoraShareContract = new ethers.Contract(
+      agoraShareAddress,
+      AgoraShare.abi,
+      provider,
+    );
+    const investors = await agoraShareContract.getFilmInvestors(parseInt(id));
     setTransactions(investors);
   };
+
+  if (!movie) return null;
 
   return (
     <div>
