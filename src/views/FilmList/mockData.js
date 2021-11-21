@@ -14,6 +14,7 @@ const mockData = [
     fundraisingAmount: 100,
     numberOfTokens: 10,
     percentageGiven: 0.1,
+    amountRaised: 40,
   },
   {
     tokenId: 123,

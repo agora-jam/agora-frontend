@@ -3,31 +3,33 @@ import { ethers } from 'ethers';
 import useStore from '../store';
 
 export default () => {
-  const { setSigner, setAccount, setGenericProvider } = useStore((state) => state);
+  const { setSigner, setAccount, setProvider } = useStore((state) => state);
 
   const connectProvider = async () => {
     const provider = new ethers.providers.JsonRpcProvider();
-    setGenericProvider(provider);
+    setProvider(provider);
   };
 
   const connectWallet = async () => {
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
-    const signer = provider.getSigner(); // eslint-disable-line no-unused-vars
+    const signer = provider.getSigner();
     const accounts = await provider.listAccounts();
 
     setAccount(accounts[0]);
     setSigner(signer);
+    setProvider(provider);
   };
 
   const setWalletInfo = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner(); // eslint-disable-line no-unused-vars
+    const signer = provider.getSigner();
     const accounts = await provider.listAccounts();
 
     setAccount(accounts[0]);
     setSigner(signer);
+    setProvider(provider);
   };
 
   const isWalletConnected = async () => {
