@@ -15,6 +15,7 @@ import Home from '../views/Home';
 const FilmPage = lazy(() => import('../views/FilmPage'));
 const WatchFilm = lazy(() => import('../views/WatchFilm'));
 const CreateFilm = lazy(() => import('../views/CreateFilm'));
+const FilmList = lazy(() => import('../views/FilmList'));
 
 const AppRouter = () => (
   <Suspense fallback={null}>
@@ -25,6 +26,7 @@ const AppRouter = () => (
         <Route exact path={routes.filmPage} component={FilmPage} />
         <Route exact path={routes.watchFilm} component={WatchFilm} />
         <Route exact path={routes.createFilm} component={CreateFilm} />
+        <Route exact path={routes.filmList} component={FilmList} />
         <RedirectTo404 />
       </Switch>
     </ScrollToTop>
