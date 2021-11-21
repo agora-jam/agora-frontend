@@ -9,9 +9,9 @@ const App = () => {
     const isConnected = await isWalletConnected();
 
     if (isConnected) {
-      setWalletInfo();
+      await setWalletInfo();
     } else {
-      connectProvider();
+      await connectProvider();
     }
   }, []);
 
