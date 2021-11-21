@@ -5,27 +5,27 @@ import useStore from '../../store/index.js';
 import axios from 'axios';
 import { ethers } from 'ethers';
 import Agora from '../../contracts/agora.json';
-import AgoraShare from '../../contracts.agoraShare.json';
+import AgoraShare from '../../contracts/agoraShare.json';
 import { agoraAddress, agoraShareAddress } from '../../../config.js';
 import Film from '../../components/Film';
 
-import mockData from './mockData';
-
 const FilmList = () => {
-  const { genericProvider } = useStore((state) => state);
+  const { provider } = useStore((state) => state);
   const [nfts, setNfts] = useState([]);
   const [loadingState, setLoadingState] = useState('not-loaded');
 
   useEffect(() => {
     loadNFTs();
-  }, []);
+  }, [provider]);
 
   const loadNFTs = async () => {
-    const agoraContract = new ethers.Contract(agoraAddress, Agora.abi, genericProvider);
+    if (!provider) return;
+
+    const agoraContract = new ethers.Contract(agoraAddress, Agora.abi, provider);
     const agoraShareContract = new ethers.Contract(
       agoraShareAddress,
       AgoraShare.abi,
-      genericProvider,
+      provider,
     );
 
     const data = await agoraContract.getAllMovies();
@@ -71,7 +71,7 @@ const FilmList = () => {
             New film submissions
           </h2>
           <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-            {mockData.map((item, i) => {
+            {nfts.map((item, i) => {
               return (
                 <div key={i} className="m-4">
                   <Link to={{ pathname: `film/${item.tokenId}`, state: item }}>

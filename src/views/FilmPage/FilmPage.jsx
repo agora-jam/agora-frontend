@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Web3Modal from 'web3modal';
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 import useStore from '../../store/index.js';
 import axios from 'axios';
 import Agora from '../../contracts/agora.json';
-import AgoraShare from '../../contracts.agoraShare.json';
+import AgoraShare from '../../contracts/agoraShare.json';
 import { agoraAddress, agoraShareAddress } from '../../../config.js';
 import PropTypes from 'prop-types';
 
 const FilmPage = ({ location }) => {
   const { filmId } = useParams();
-  const { genericProvider } = useStore((state) => state);
+  const { provider } = useStore((state) => state);
   const [movie, setMovie] = useState(location.state);
   const [filmStatus, setFilmStatus] = useState('active');
   const [transactions, setTransactions] = useState(null);
@@ -46,7 +46,7 @@ const FilmPage = ({ location }) => {
   }, []);
 
   const getMovieDetails = async (id) => {
-    const agoraContract = new ethers.Contract(agoraAddress, Agora.abi, genericProvider);
+    const agoraContract = new ethers.Contract(agoraAddress, Agora.abi, provider);
 
     const tokenUrl = await agoraContract.getOneMovie(id);
     const meta = await axios.get(tokenUrl);
@@ -72,7 +72,7 @@ const FilmPage = ({ location }) => {
     const agoraShareContract = new ethers.Contract(
       agoraShareAddress,
       AgoraShare.abi,
-      genericProvider,
+      provider,
     );
     const investors = await agoraShareContract.getFilmInvestors(id);
     setTransactions(investors);
